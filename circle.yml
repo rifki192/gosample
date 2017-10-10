@@ -25,7 +25,7 @@ machine:
         background: true
 dependencies:
   pre:
-    - go get github.com/golang/dep
+    - go get -u github.com/golang/dep/cmd/dep
 
   override:
     - cd $GOPATH/bin
