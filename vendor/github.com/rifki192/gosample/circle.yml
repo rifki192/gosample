@@ -1,0 +1,40 @@
+general:
+  branches:
+    only:
+      - master
+machine:
+  services: 
+    - redis
+  environment:
+    GODIST: "go1.8.3.linux-amd64.tar.gz"
+    _JAVA_OPTIONS: "-Xms512m -Xmx1024m"
+    AWS_ACCESS_KEY_ID: 0xDEADBEEF
+    AWS_SECRET_ACCESS_KEY: 0xDEADBEEF
+
+  java:
+    version: openjdk7
+
+  post:
+    - mkdir -p downloads
+    - test -e downloads/$GODIST || curl -o downloads/$GODIST https://storage.googleapis.com/golang/$GODIST
+    - sudo rm -rf /usr/local/go
+    - sudo tar -C /usr/local -xzf downloads/$GODIST
+    - curl -k -L -o dynamodb-local.tgz http://dynamodb-local.s3-website-us-west-2.amazonaws.com/dynamodb_local_latest.tar.gz
+    - tar -xzf dynamodb-local.tgz
+    - java -Djava.library.path=./DynamoDBLocal_lib -jar DynamoDBLocal.jar --port 4567 -sharedDb:
+        background: true
+dependencies:
+  pre:
+    - go get -u github.com/golang/dep/cmd/dep
+  override:
+    - mkdir -p $HOME/.go_project/src/github.com/$CIRCLE_PROJECT_USERNAME
+    - ln -fs $HOME/$CIRCLE_PROJECT_REPONAME $HOME/.go_project/src/github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
+    - |
+      echo 'export GOPATH=$GOPATH:$HOME/.go_project' >> ~/.circlerc
+    
+test:
+  pre:
+    - cd $HOME/.go_project/src/github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME && dep ensure -vendor-only -v
+
+  override:
+    - cd $HOME/.go_project/src/github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME && go test -v -cover -race $(go list ./... | grep -v vendor/)

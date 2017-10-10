@@ -44,6 +44,12 @@
   version = "v1.0.7"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/rifki192/gosample"
+  packages = ["hello"]
+  revision = "183069fb80f6840b8f00a14ad39bf3a84b019273"
+
+[[projects]]
   name = "github.com/valyala/fasthttp"
   packages = [".","fasthttputil","reuseport"]
   revision = "d42167fd04f636e20b005e9934159e95454233c7"
@@ -82,6 +88,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "c6081f486b7861bc9106cafb606875dad1ad6840775f59580a50b4b0a3763e05"
+  inputs-digest = "dd7338b4627f2ecb8c6729f8620d2bccc00511f99924c11350e03531fdd2e873"
   solver-name = "gps-cdcl"
   solver-version = 1

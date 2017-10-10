@@ -26,14 +26,15 @@ machine:
 dependencies:
   pre:
     - go get -u github.com/golang/dep/cmd/dep
-
   override:
-    - cd $GOPATH/bin
-    - mv dep /usr/local/bin
-
+    - mkdir -p $HOME/.go_project/src/github.com/$CIRCLE_PROJECT_USERNAME
+    - ln -fs $HOME/$CIRCLE_PROJECT_REPONAME $HOME/.go_project/src/github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
+    - |
+      echo 'export GOPATH=$GOPATH:$HOME/.go_project' >> ~/.circlerc
+    
 test:
   pre:
-    - dep ensure -vendor-only -v
+    - cd $HOME/.go_project/src/github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME && dep ensure -vendor-only -v
 
   override:
-    - go test -v -cover -race $(go list ./... | grep -v vendor/)
+    - cd $HOME/.go_project/src/github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME && go test -v -cover -race $(go list ./... | grep -v vendor/)
